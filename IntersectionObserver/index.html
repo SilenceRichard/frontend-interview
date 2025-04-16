@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intersection Observer 示例演示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    
+    .demo-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .demo-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .demo-image {
+      width: 100%;
+      height: 150px;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 48px;
+    }
+    
+    .demo-content {
+      padding: 15px;
+    }
+    
+    .demo-content h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    
+    .demo-content p {
+      margin-bottom: 15px;
+      color: #666;
+    }
+    
+    .demo-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    
+    .demo-btn:hover {
+      background-color: #45a049;
+    }
+    
+    .intro {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+      border-left: 4px solid #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <h1>Intersection Observer API 演示</h1>
+  
+  <div class="intro">
+    <p>Intersection Observer API 是一个现代浏览器提供的强大 API，它能够异步监测目标元素与其祖先元素或视口之间的交叉状态变化。以下是三个常见应用场景的演示：</p>
+  </div>
+  
+  <div class="demo-grid">
+    <div class="demo-card">
+      <div class="demo-image">📷</div>
+      <div class="demo-content">
+        <h3>图片懒加载</h3>
+        <p>演示如何使用 Intersection Observer 实现图片懒加载，仅在图片即将进入视口时才加载，大幅优化页面性能和带宽使用。</p>
+        <a href="lazy-loading.html" class="demo-btn">查看演示</a>
+      </div>
+    </div>
+    
+    <div class="demo-card">
+      <div class="demo-image">♾️</div>
+      <div class="demo-content">
+        <h3>无限滚动加载</h3>
+        <p>演示如何实现无限滚动，当用户快要滚动到页面底部时，自动触发加载更多内容，提高浏览体验。</p>
+        <a href="infinite-scroll.html" class="demo-btn">查看演示</a>
+      </div>
+    </div>
+    
+    <div class="demo-card">
+      <div class="demo-image">▶️</div>
+      <div class="demo-content">
+        <h3>视频自动播放/暂停</h3>
+        <p>演示如何根据视频在视口中的可见状态，自动控制视频的播放和暂停，优化用户体验与性能。</p>
+        <a href="video-autoplay.html" class="demo-btn">查看演示</a>
+      </div>
+    </div>
+  </div>
+  
+  <footer style="margin-top: 40px; text-align: center; color: #666; border-top: 1px solid #eee; padding-top: 20px;">
+    <p>这些演示展示了 Intersection Observer API 在实际开发中的常见应用场景。</p>
+  </footer>
+</body>
+</html> 

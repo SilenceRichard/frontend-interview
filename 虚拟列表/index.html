@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Virtual List Demo</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-type="module">
+      // Generate a large dataset for demonstration
+      const generateData = (count) => {
+        return Array.from({ length: count }, (_, i) => `Item ${i + 1}`);
+      };
+
+      const data = generateData(1000);
+      const { useState, useRef } = React;
+
+      const itemHeight = 30;
+      const visibleCount = 10;
+
+      const VirtualList = ({ data }) => {
+        const [start, setStart] = useState(0);
+        const ref = useRef(null);
+
+        const onScroll = (e) => {
+          const scrollTop = e.target.scrollTop;
+          setStart(Math.floor(scrollTop / itemHeight));
+        };
+
+        const visibleItems = data.slice(start, start + visibleCount);
+        const offsetY = start * itemHeight;
+
+        return (
+          <div
+            ref={ref}
+            style={{ height: visibleCount * itemHeight, overflowY: "auto" }}
+            onScroll={onScroll}
+          >
+            <div
+              style={{ height: data.length * itemHeight, position: "relative" }}
+            >
+              <div style={{ transform: `translateY(${offsetY}px)` }}>
+                {visibleItems.map((item, i) => (
+                  <div key={i} style={{ height: itemHeight }}>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      function App() {
+        return (
+          <div className="App">
+            <h1>Virtual List Demo</h1>
+            <VirtualList data={data} />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

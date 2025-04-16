@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intersection Observer - Lazy Loading Images</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .image-container {
+      min-height: 400px;
+      margin-bottom: 50px;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      opacity: 0;
+      transition: opacity 0.3s ease-in;
+    }
+    
+    img.loaded {
+      opacity: 1;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .placeholder {
+      width: 100%;
+      height: 300px;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>图片懒加载示例</h1>
+  <p>向下滚动页面，查看图片懒加载效果。只有当图片进入视口时才会加载。</p>
+  
+  <div class="image-container">
+    <img data-src="https://picsum.photos/id/10/800/400" alt="图片1">
+    <div class="placeholder">图片正在加载中...</div>
+  </div>
+  
+  <div class="image-container">
+    <img data-src="https://picsum.photos/id/20/800/400" alt="图片2">
+    <div class="placeholder">图片正在加载中...</div>
+  </div>
+  
+  <div class="image-container">
+    <img data-src="https://picsum.photos/id/30/800/400" alt="图片3">
+    <div class="placeholder">图片正在加载中...</div>
+  </div>
+  
+  <div class="image-container">
+    <img data-src="https://picsum.photos/id/40/800/400" alt="图片4">
+    <div class="placeholder">图片正在加载中...</div>
+  </div>
+  
+  <div class="image-container">
+    <img data-src="https://picsum.photos/id/50/800/400" alt="图片5">
+    <div class="placeholder">图片正在加载中...</div>
+  </div>
+  
+  <script>
+    // 创建 Intersection Observer 实例
+    const observer = new IntersectionObserver((entries) => {
+      // 遍历所有变化的元素
+      entries.forEach(entry => {
+        // 如果元素进入视口
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          const placeholder = img.nextElementSibling;
+          
+          // 把 data-src 的值赋给 src，触发加载
+          img.src = img.dataset.src;
+          
+          // 图片加载完成后，添加淡入动画并移除占位符
+          img.onload = () => {
+            img.classList.add('loaded');
+            placeholder.style.display = 'none';
+          };
+          
+          // 停止观察这个图片
+          observer.unobserve(img);
+        }
+      });
+    }, {
+      // 设置阈值，图片出现20%时就开始加载
+      threshold: 0.2,
+      // 设置rootMargin，在图片进入视口前100px就开始加载
+      rootMargin: '0px 0px 100px 0px'
+    });
+    
+    // 找到所有需要懒加载的图片，并开始观察它们
+    document.querySelectorAll('img[data-src]').forEach(img => {
+      observer.observe(img);
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intersection Observer - Video Autoplay</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .video-container {
+      margin-bottom: 50vh; /* 设置大间距让视频离开视口 */
+      background-color: #f0f0f0;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    
+    video {
+      width: 100%;
+      display: block;
+    }
+    
+    .video-info {
+      padding: 15px;
+      background-color: #f8f8f8;
+      border-top: 1px solid #ddd;
+    }
+    
+    h1, h2 {
+      text-align: center;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 8px;
+      background-color: #ccc;
+    }
+    
+    .status-indicator.playing {
+      background-color: #4CAF50;
+    }
+    
+    .status-indicator.paused {
+      background-color: #F44336;
+    }
+    
+    .status {
+      font-size: 14px;
+      color: #555;
+    }
+    
+    .intro {
+      margin-bottom: 40px;
+      padding: 20px;
+      background-color: #fff8e1;
+      border-radius: 5px;
+      border-left: 4px solid #FFB300;
+    }
+  </style>
+</head>
+<body>
+  <h1>视频自动播放与暂停示例</h1>
+  
+  <div class="intro">
+    <p>滚动页面，当视频进入视口时会自动播放，离开视口时会自动暂停。</p>
+    <p>Tips: 如果您的浏览器阻止自动播放，可能需要先与页面交互（点击页面）以允许播放。</p>
+  </div>
+  
+  <div class="video-container">
+    <video class="autoplay-on-visible" muted loop>
+      <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4">
+      您的浏览器不支持视频标签。
+    </video>
+    <div class="video-info">
+      <h3>视频 #1</h3>
+      <p class="status"><span class="status-indicator"></span>状态: <span class="status-text">等待进入视口</span></p>
+    </div>
+  </div>
+
+  
+  <script>
+    // 创建交叉观察器
+    const observer = new IntersectionObserver((entries) => {
+      // 遍历所有交叉状态变化的视频
+      entries.forEach(entry => {
+        const video = entry.target;
+        const container = video.closest('.video-container');
+        const statusIndicator = container.querySelector('.status-indicator');
+        const statusText = container.querySelector('.status-text');
+        
+        // 如果视频进入视口
+        if (entry.isIntersecting) {
+          // 尝试播放视频
+          const playPromise = video.play();
+          
+          // 播放成功后更新状态指示器
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                statusText.textContent = '正在播放';
+                statusIndicator.classList.add('playing');
+                statusIndicator.classList.remove('paused');
+              })
+              .catch(error => {
+                // 自动播放被阻止
+                console.warn('视频自动播放被阻止:', error);
+                statusText.textContent = '播放被阻止 (点击页面一次以允许)';
+              });
+          }
+        } else {
+          // 视频离开视口时暂停
+          video.pause();
+          statusText.textContent = '已暂停 (离开视口)';
+          statusIndicator.classList.add('paused');
+          statusIndicator.classList.remove('playing');
+        }
+      });
+    }, {
+      // 设置阈值，视频至少有50%在视口内时才算交叉
+      threshold: 0.9
+    });
+    
+    // 选择所有需要自动播放/暂停的视频
+    document.querySelectorAll('video.autoplay-on-visible').forEach(video => {
+      // 开始观察视频元素
+      observer.observe(video);
+      
+      // 如果遇到自动播放限制，可以在用户交互后尝试再次播放
+      document.addEventListener('click', () => {
+        if (video.paused) {
+          const container = video.closest('.video-container');
+          const intersecting = observer.takeRecords().some(entry => 
+            entry.target === video && entry.isIntersecting
+          );
+          
+          if (intersecting) {
+            video.play().then(() => {
+              const statusIndicator = container.querySelector('.status-indicator');
+              const statusText = container.querySelector('.status-text');
+              statusText.textContent = '正在播放';
+              statusIndicator.classList.add('playing');
+              statusIndicator.classList.remove('paused');
+            });
+          }
+        }
+      }, { once: true });
+    });
+  </script>
+</body>
+</html> 

@@ -1,0 +1,31 @@
+.App {
+  font-family: sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Virtual list items styling */
+/* Scrollbar styling */
+div[style*="overflow"] {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+div[style*="overflow"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+div[style*="overflow"]::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+div[style*="overflow"]::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+} 

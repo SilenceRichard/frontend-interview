@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Variable Height Virtual List Demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+      .App {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      h1 {
+        text-align: center;
+      }
+      .list-item {
+        border-bottom: 1px solid #eee;
+        padding: 5px 10px;
+        display: flex;
+        align-items: center;
+      }
+    </style>
+    <script
+      src="https://unpkg.com/react@18/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" data-type="module">
+      // Generate a large dataset with variable heights for demonstration
+      const generateData = (count) => {
+        return Array.from({ length: count }, (_, i) => ({
+          id: i,
+          text: `Variable Height Item ${i + 1}`,
+          height: 30 + Math.floor(Math.random() * 50) // Random height between 30 and 80
+        }));
+      };
+
+      const data = generateData(1000);
+      const { useState, useRef, useEffect, useCallback } = React;
+
+      const VariableHeightVirtualList = ({ data, containerHeight = 400, buffer = 5 }) => {
+        const [visibleItems, setVisibleItems] = useState([]);
+        const [startIndex, setStartIndex] = useState(0);
+        const [endIndex, setEndIndex] = useState(0);
+        const containerRef = useRef(null);
+        const heightsRef = useRef([]);
+        const totalHeightRef = useRef(0);
+        
+        // Initialize height calculations
+        useEffect(() => {
+          // Calculate heights and accumulated heights for binary search
+          const heights = [];
+          let accumulatedHeight = 0;
+          
+          data.forEach(item => {
+            heights.push({
+              height: item.height,
+              accumulatedHeight
+            });
+            accumulatedHeight += item.height;
+          });
+          
+          heightsRef.current = heights;
+          totalHeightRef.current = accumulatedHeight;
+          
+          updateVisibleItems(0);
+        }, [data]);
+        
+        // Binary search to find the index of the item at a given scroll position
+        const findItemIndexAtPosition = useCallback((scrollTop) => {
+          const heights = heightsRef.current;
+          let low = 0;
+          let high = heights.length - 1;
+          
+          while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+            const { accumulatedHeight, height } = heights[mid];
+            
+            if (accumulatedHeight <= scrollTop && accumulatedHeight + height > scrollTop) {
+              return mid;
+            }
+            
+            if (accumulatedHeight < scrollTop) {
+              low = mid + 1;
+            } else {
+              high = mid - 1;
+            }
+          }
+          
+          return low;
+        }, []);
+        
+        // Find the start and end indices of visible items based on scroll position
+        const updateVisibleItems = useCallback((scrollTop) => {
+          const startIndex = findItemIndexAtPosition(scrollTop);
+          
+          // Calculate how many items will fit in the viewport
+          let endIndex = startIndex;
+          let currentHeight = heightsRef.current[startIndex]?.accumulatedHeight || 0;
+          
+          while (
+            endIndex < data.length &&
+            currentHeight < scrollTop + containerHeight
+          ) {
+            currentHeight += heightsRef.current[endIndex].height;
+            endIndex++;
+          }
+          
+          // Add buffer items
+          const bufferStart = Math.max(0, startIndex - buffer);
+          const bufferEnd = Math.min(data.length, endIndex + buffer);
+          
+          setStartIndex(bufferStart);
+          setEndIndex(bufferEnd);
+          setVisibleItems(data.slice(bufferStart, bufferEnd));
+        }, [data, containerHeight, buffer, findItemIndexAtPosition]);
+        
+        const handleScroll = useCallback((e) => {
+          const scrollTop = e.target.scrollTop;
+          updateVisibleItems(scrollTop);
+        }, [updateVisibleItems]);
+        
+        // Calculate offset from the top for rendering
+        const getOffsetTop = useCallback(() => {
+          if (startIndex === 0) return 0;
+          return heightsRef.current[startIndex].accumulatedHeight;
+        }, [startIndex]);
+        
+        return (
+          <div
+            ref={containerRef}
+            style={{
+              height: containerHeight,
+              overflowY: 'auto',
+              position: 'relative',
+              border: '1px solid #ccc'
+            }}
+            onScroll={handleScroll}
+          >
+            <div
+              style={{
+                height: totalHeightRef.current,
+                position: 'relative'
+              }}
+            >
+              <div
+                style={{
+                  // position: 'absolute',
+                  // top: 0,
+                  transform: `translateY(${getOffsetTop()}px)`
+                }}
+              >
+                {visibleItems.map(item => (
+                  <div
+                    key={item.id}
+                    className="list-item"
+                    style={{
+                      height: `${item.height}px`
+                    }}
+                  >
+                    {item.text} (Height: {item.height}px)
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      function App() {
+        return (
+          <div className="App">
+            <h1>Variable Height Virtual List Demo</h1>
+            <VariableHeightVirtualList data={data} />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html> 
