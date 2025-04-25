@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Service Worker Cache Demo - V2</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      text-align: center;
+      line-height: 1.6;
+    }
+    h1 {
+      color: #0066cc;
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .version {
+      color: #e91e63;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .card {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 1rem 0;
+    }
+    button:hover {
+      background-color: #0055aa;
+    }
+    .fixed {
+      background-color: #e8f5e9;
+      border-left: 4px solid #4caf50;
+      padding: 1rem;
+      text-align: left;
+      margin: 1rem 0;
+    }
+    code {
+      background-color: #f1f1f1;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+    .update-notification {
+      display: none;
+      background-color: #bbdefb;
+      color: #0d47a1;
+      padding: 1rem;
+      border-radius: 4px;
+      margin: 1rem 0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Service Worker Cache Demo</h1>
+  <div class="version">Hello from Version 2</div>
+  
+  <div class="update-notification" id="update-notification">
+    New version available! <button id="refresh-button">Refresh Now</button>
+  </div>
+  
+  <div class="card">
+    <p>This is Version 2 of the demo, with updated content and improved service worker.</p>
+    
+    <div class="fixed">
+      <p><strong>Solution:</strong> The improved service worker uses:</p>
+      <ul>
+        <li><code>self.skipWaiting()</code> to activate immediately</li>
+        <li><code>clients.claim()</code> to take control of pages</li>
+        <li>Cache versioning (<code>demo-cache-v2</code>)</li>
+        <li>Update notification via <code>controllerchange</code> event</li>
+      </ul>
+    </div>
+    
+    <p>Check the Application tab in DevTools to see the updated cache.</p>
+    
+    <button id="check-sw">Check SW Status</button>
+    <div id="sw-status"></div>
+  </div>
+
+  <script>
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      // Add listener for service worker updates
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        document.getElementById('update-notification').style.display = 'block';
+      });
+      
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+
+    // Button to check SW status
+    document.getElementById('check-sw').addEventListener('click', async () => {
+      const statusElement = document.getElementById('sw-status');
+      
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+          statusElement.innerHTML = `Service Worker is active (State: ${registration.active ? registration.active.state : 'unknown'})`;
+        } else {
+          statusElement.innerHTML = 'No Service Worker found';
+        }
+      } else {
+        statusElement.innerHTML = 'Service Workers not supported in this browser';
+      }
+    });
+    
+    // Refresh button
+    document.getElementById('refresh-button').addEventListener('click', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html> 
