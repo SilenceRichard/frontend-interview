@@ -2,14 +2,28 @@
   "version": 2,
   "routes": [
     {
-      "src": "/(.*)\\.(.*)$",
+      "src": "/image.png",
       "headers": {
         "cache-control": "public, max-age=31536000, immutable"
       },
       "continue": true
     },
     {
-      "src": "/(.*)",
+      "src": "/styles.css",
+      "headers": {
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
+    },
+    {
+      "src": "/index.html",
+      "headers": {
+        "cache-control": "public, max-age=0, must-revalidate"
+      },
+      "continue": true
+    },
+    {
+      "src": "/(.*).html",
       "headers": {
         "cache-control": "public, max-age=0, must-revalidate"
       },
