@@ -1,0 +1,12 @@
+{
+  "name": "cloudflare-cache-demo",
+  "version": "1.0.0",
+  "description": "A demo server for caching static resources",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+} 

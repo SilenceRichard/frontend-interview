@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端版本控制示例</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">前端版本控制示例</h1>
+        <div class="app-container">
+            <div class="version-info">
+                <p>前端代码版本: <span id="frontend-version">加载中...</span></p>
+                <p>API 数据版本: <span id="api-version">加载中...</span></p>
+                <p>版本状态: <span id="version-status">检查中...</span></p>
+            </div>
+            <div class="user-list-container">
+                <h2>用户列表</h2>
+                <div id="user-list" class="user-list">
+                    <p class="loading">加载中...</p>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="load-v1">加载 V1 API 数据</button>
+                <button id="load-v2">加载 V2 API 数据</button>
+                <button id="refresh-page" class="hidden">刷新页面获取最新代码</button>
+            </div>
+            <div class="back-link">
+                <a href="switch.html">返回版本选择</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 根据URL参数决定加载哪个版本的JS
+        function loadAppVersion() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const version = urlParams.get('v');
+            
+            const script = document.createElement('script');
+            
+            if (version === '2') {
+                // 加载V2版本的JS
+                script.src = 'app-v2.js';
+            } else {
+                // 默认加载V1版本的JS
+                script.src = 'app.js';
+            }
+            
+            document.body.appendChild(script);
+        }
+        
+        // 加载相应版本的JS
+        loadAppVersion();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Worker Cache Demo</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        h1 { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Version 1</h1>
+   
+
+    <script>
+        // 注册 Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        } else {
+            console.log('Service Worker not supported in this browser.');
+        }
+    </script>
+</body>
+</html> 
